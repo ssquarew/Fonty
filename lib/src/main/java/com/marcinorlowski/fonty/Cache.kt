@@ -28,7 +28,7 @@ class Cache protected constructor()// singleton
      *
      * @return instance of Cache for easy chaining
      */
-    fun add(alias: String, typeface: Typeface): Cache {
+    fun addFromAsset(alias: String, typeface: Typeface): Cache {
         if (mTypefaceCache.containsKey(alias)) {
             throw RuntimeException("Typeface '$alias' already exists in cache")
         }
@@ -47,10 +47,31 @@ class Cache protected constructor()// singleton
      *
      * @return instance of Cache for easy chaining
      */
-    fun add(context: Context, alias: String, fileName: String): Cache {
+    fun addFromAsset(context: Context, alias: String, fileName: String): Cache {
         synchronized(mTypefaceCache) {
             if (!mTypefaceCache.containsKey(alias)) {
                 val typeface = Typeface.createFromAsset(context.assets, fileName)
+
+                mTypefaceCache[alias] = typeface
+            }
+        }
+        return this
+    }
+
+    /**
+     * Add typeface to font cache.
+     *
+     * @param context  application context
+     * @param alias    typeface alias
+     * @param fileName path to font asset
+     *
+     * @return instance of Cache for easy chaining
+     */
+    fun addFromFilePath(context: Context, alias: String, filepath: String): Cache {
+        synchronized(mTypefaceCache) {
+            if (!mTypefaceCache.containsKey(alias)) {
+                val typeface = Typeface.createFromFile(filepath)
+
                 mTypefaceCache[alias] = typeface
             }
         }

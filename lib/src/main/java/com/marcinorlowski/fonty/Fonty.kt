@@ -49,13 +49,6 @@ class Fonty {
 
     // --------------------------------------------------------------------------------------------
 
-    /**
-     * Sets font path (relative to your "assets" folder) to be used to find the font files.
-     *
-     * @param fontDir the font dir **relative** to your "assets" folder.
-     *
-     * @return instance of Fonty object for easy chaining
-     */
     fun fontDir(fontDir: String): Fonty {
         failIfConfigured()
 
@@ -80,19 +73,16 @@ class Fonty {
             }
         }
 
-        fontFolderName = dir
+        fontDirectoryPath = dir
     }
 
-    /**
-     * Font file folder **relative** to your "assets" folder
-     */
-    private var fontFolderName = "fonts/"
+
+    private var fontDirectoryPath = "fonts/"
 
 
     // --------------------------------------------------------------------------------------------
 
     private var boldTypefaceNameTmp: String? = null
-    private var boldTypefaceIdTmp: Int? = null
 
     /**
      * Set typeface to be used for BOLD
@@ -105,7 +95,6 @@ class Fonty {
         failIfConfigured()
 
         boldTypefaceNameTmp = fileName
-        boldTypefaceIdTmp = null
         return this
     }
 
@@ -119,7 +108,6 @@ class Fonty {
     fun boldTypeface(fileNameId: Int): Fonty {
         failIfConfigured()
 
-        boldTypefaceIdTmp = fileNameId
         boldTypefaceNameTmp = null
         return this
     }
@@ -127,7 +115,6 @@ class Fonty {
     // --------------------------------------------------------------------------------------------
 
     private var normalTypefaceNameTmp: String? = null
-    private var normalTypefaceIdTmp: Int? = null
 
     /**
      * Set typeface to be used for NORMAL style
@@ -140,7 +127,6 @@ class Fonty {
         failIfConfigured()
 
         normalTypefaceNameTmp = fileName
-        normalTypefaceIdTmp = null
         return this
     }
 
@@ -154,7 +140,6 @@ class Fonty {
     fun normalTypeface(fileNameId: Int): Fonty {
         failIfConfigured()
 
-        normalTypefaceIdTmp = fileNameId
         normalTypefaceNameTmp = null
         return this
     }
@@ -162,7 +147,6 @@ class Fonty {
     // --------------------------------------------------------------------------------------------
 
     private var italicTypefaceNameTmp: String? = null
-    private var italiclTypefaceIdTmp: Int? = null
 
     /**
      * Set typeface to be used for ITALIC style
@@ -175,7 +159,6 @@ class Fonty {
         failIfConfigured()
 
         italicTypefaceNameTmp = fileName
-        italiclTypefaceIdTmp = null
         return this
     }
 
@@ -189,7 +172,6 @@ class Fonty {
     fun italicTypeface(fileNameId: Int): Fonty {
         failIfConfigured()
 
-        italiclTypefaceIdTmp = fileNameId
         italicTypefaceNameTmp = null
         return this
     }
@@ -204,8 +186,8 @@ class Fonty {
      *
      * @return instance of Fonty object for easy chaining
      */
-    private fun add(alias: String, @StringRes fileNameId: Int): Fonty {
-        return add(alias, mContext!!.resources.getString(fileNameId))
+    private fun addFromAsset(alias: String, @StringRes fileNameId: Int): Fonty {
+        return addFromAsset(alias, mContext!!.resources.getString(fileNameId))
     }
 
     /**
@@ -216,9 +198,9 @@ class Fonty {
      *
      * @return instance of Fonty object for easy chaining
      */
-    private fun add(@StringRes aliasId: Int, @StringRes fileNameId: Int): Fonty {
+    private fun addFromAsset(@StringRes aliasId: Int, @StringRes fileNameId: Int): Fonty {
         val res = mContext!!.resources
-        return add(res.getString(aliasId), res.getString(fileNameId))
+        return addFromFilePath(res.getString(aliasId), res.getString(fileNameId))
     }
 
     /**
@@ -230,7 +212,7 @@ class Fonty {
      * add "/" to fontFileName, i.e. "/foo.ttf" or "/foo/other-folder/foo.ttf". In such case
      * fontDir is not used.
      */
-    private fun add(alias: String, fontFileName: String): Fonty {
+    private fun addFromAsset(alias: String, fontFileName: String): Fonty {
         when {
             alias.isEmpty() -> throw RuntimeException("Typeface alias cannot be empty string")
             fontFileName.isEmpty() -> throw RuntimeException("Typeface filename cannot be empty string")
@@ -242,10 +224,39 @@ class Fonty {
         fontFile = if (fontFile.substring(0, 1) == "/") {
             fontFile.substring(1)
         } else {
-            fontFolderName + fontFile
+            fontDirectoryPath + fontFile
         }
 
-        Cache.instance.add(mContext!!, alias, fontFile)
+        Cache.instance.addFromAsset(mContext!!, alias, fontFile)
+
+        return this
+    }
+
+    /**
+     * Add typeface to Fonty's cache. Throws RuntimeException if Fonty's context is not set up,
+     *
+     * @param alias        the typeface alias
+     * @param fontFilePath the file name of TTF asset. Can contain folder names too (i.e. "fnt/foo.ttf"). It will be
+     * automatically "glued" with font folder name (see @fontDir()). If you do not want this to happen
+     * add "/" to fontFileName, i.e. "/foo.ttf" or "/foo/other-folder/foo.ttf". In such case
+     * fontDir is not used.
+     */
+    private fun addFromFilePath(alias: String, fontFilePath: String): Fonty {
+        when {
+            alias.isEmpty() -> throw RuntimeException("Typeface alias cannot be empty string")
+            fontFilePath.isEmpty() -> throw RuntimeException("Typeface filename cannot be empty string")
+        }
+
+        var fontFile = fontFilePath
+
+        // strip leading "/" if present
+        fontFile = if (fontFile.substring(0, 1) == "/") {
+            fontFile.substring(1)
+        } else {
+            fontDirectoryPath + fontFile
+        }
+
+        Cache.instance.addFromFilePath(mContext!!, alias, fontFile)
 
         return this
     }
@@ -280,21 +291,15 @@ class Fonty {
         setFontDir(fontDirTmp)
 
         if (normalTypefaceNameTmp != null) {
-            add(TYPE_NORMAL, normalTypefaceNameTmp!!)
-        } else if (normalTypefaceIdTmp != null) {
-            add(TYPE_NORMAL, normalTypefaceIdTmp!!)
+            addFromFilePath(TYPE_NORMAL, normalTypefaceNameTmp!!)
         }
 
         if (boldTypefaceNameTmp != null) {
-            add(TYPE_BOLD, boldTypefaceNameTmp!!)
-        } else if (boldTypefaceIdTmp != null) {
-            add(TYPE_BOLD, boldTypefaceIdTmp!!)
+            addFromFilePath(TYPE_BOLD, boldTypefaceNameTmp!!)
         }
 
         if (italicTypefaceNameTmp != null) {
-            add(TYPE_ITALIC, italicTypefaceNameTmp!!)
-        } else if (italiclTypefaceIdTmp != null) {
-            add(TYPE_ITALIC, italiclTypefaceIdTmp!!)
+            addFromFilePath(TYPE_ITALIC, italicTypefaceNameTmp!!)
         }
 
 

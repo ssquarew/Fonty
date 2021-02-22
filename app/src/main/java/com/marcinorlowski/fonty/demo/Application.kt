@@ -15,12 +15,14 @@ import com.marcinorlowski.fonty.Fonty.Companion.context
 class Application : Application() {
     override fun onCreate() {
         super.onCreate()
+
+        val files = this.filesDir.absolutePath
         context(this)
-//              .fontDir("otherFolder")
+              .fontDir(files)
 //              .typefaceFallback(false)
-                .italicTypeface("Aramis-Italic.ttf")
-                .normalTypeface("Exo-Regular.ttf")
-                .boldTypeface("Capture_it.ttf")
+                .italicTypeface("ko_three.ttf")
+                .normalTypeface("ko_three.ttf")
+                .boldTypeface("ko_three.ttf")
                 .build()
     }
 }
