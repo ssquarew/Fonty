@@ -79,6 +79,10 @@ class MainActivity : AppCompatActivity() {
 
         // apply our fonts now
         Fonty.setFonts(this)
+        findViewById<View>(R.id.button).setOnClickListener {
+            clickButton()
+        }
+
 
         mButterKnifeUnbinder = ButterKnife.bind(this)
     }
@@ -103,6 +107,19 @@ class MainActivity : AppCompatActivity() {
 
     @OnClick(R.id.button)
     fun clickButton() {
+
+        val files = this.filesDir.absolutePath
+        Fonty.initWithContext(this)
+                .fontDir(files)
+                .italicTypeface("ko_bingre.ttf")
+                .normalTypeface("ko_bingre.ttf")
+                .boldTypeface("ko_bingre.ttf")
+                .refresh()
+        Fonty.setFonts(this)
+
+        Toast.makeText(this, "font refresh!", Toast.LENGTH_LONG).show()
+
+
         val ids = intArrayOf(R.id.til1, R.id.til2)
         for (id in ids) {
             val til = findViewById<TextInputLayout>(id)

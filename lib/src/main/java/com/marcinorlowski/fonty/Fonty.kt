@@ -50,7 +50,6 @@ class Fonty {
     // --------------------------------------------------------------------------------------------
 
     fun fontDir(fontDir: String): Fonty {
-        failIfConfigured()
 
         this.fontDirTmp = fontDir
         return this
@@ -92,7 +91,6 @@ class Fonty {
      * @return instance of Fonty object for easy chaining
      */
     fun boldTypeface(fileName: String): Fonty {
-        failIfConfigured()
 
         boldTypefaceNameTmp = fileName
         return this
@@ -124,7 +122,6 @@ class Fonty {
      * @return instance of Fonty object for easy chaining
      */
     fun normalTypeface(fileName: String): Fonty {
-        failIfConfigured()
 
         normalTypefaceNameTmp = fileName
         return this
@@ -156,7 +153,6 @@ class Fonty {
      * @return instance of Fonty object for easy chaining
      */
     fun italicTypeface(fileName: String): Fonty {
-        failIfConfigured()
 
         italicTypefaceNameTmp = fileName
         return this
@@ -261,6 +257,11 @@ class Fonty {
         return this
     }
 
+    private fun clearFontCaches():Fonty{
+        Cache.instance.clearCache()
+        return this
+    }
+
     /**
      * Controls typeface fallback mechanism. When widget requires BOLD or ITALIC font and such
      * typeface is not configured, then: when this option is set to @false RuntimeException
@@ -302,6 +303,29 @@ class Fonty {
             addFromFilePath(TYPE_ITALIC, italicTypefaceNameTmp!!)
         }
 
+
+        alreadyConfigured = true
+    }
+
+    /**
+     * Concludes configuration phase. Must be called as last method of Fonty config call chain
+     */
+    fun refresh() {
+        clearFontCaches()
+
+        setFontDir(fontDirTmp)
+
+        if (normalTypefaceNameTmp != null) {
+            addFromFilePath(TYPE_NORMAL, normalTypefaceNameTmp!!)
+        }
+
+        if (boldTypefaceNameTmp != null) {
+            addFromFilePath(TYPE_BOLD, boldTypefaceNameTmp!!)
+        }
+
+        if (italicTypefaceNameTmp != null) {
+            addFromFilePath(TYPE_ITALIC, italicTypefaceNameTmp!!)
+        }
 
         alreadyConfigured = true
     }

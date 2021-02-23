@@ -58,6 +58,13 @@ class Cache protected constructor()// singleton
         return this
     }
 
+    fun clearCache(): Cache {
+        synchronized(mTypefaceCache) {
+            mTypefaceCache.clear()
+        }
+        return this
+    }
+
     /**
      * Add typeface to font cache.
      *
