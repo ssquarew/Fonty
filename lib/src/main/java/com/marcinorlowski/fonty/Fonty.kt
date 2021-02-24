@@ -454,7 +454,7 @@ class Fonty {
                     view.typeface = Utils.substituteTypeface(oldTf, fallback, view.javaClass.name, view.getId())
 
                 } else if (TableLayout::class.java.isInstance(view)) {
-                    val vg = viewGroup.getChildAt(0) as ViewGroup
+                    val vg = view as ViewGroup
                     val tabsCount = vg.childCount
                     for (j in 0 until tabsCount) {
                         val vgTab = vg.getChildAt(j) as ViewGroup
