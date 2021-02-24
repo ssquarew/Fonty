@@ -2,6 +2,7 @@ package com.marcinorlowski.fonty
 
 import android.content.Context
 import android.graphics.Typeface
+import android.graphics.fonts.Font
 
 import java.util.Hashtable
 
@@ -78,6 +79,7 @@ class Cache protected constructor()// singleton
         synchronized(mTypefaceCache) {
             if (!mTypefaceCache.containsKey(alias)) {
                 val typeface = Typeface.createFromFile(filepath)
+               
 
                 mTypefaceCache[alias] = typeface
             }

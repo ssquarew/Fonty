@@ -11,11 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TableLayout
 import android.widget.TextView
-
+import androidx.annotation.StringRes
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
-import androidx.annotation.StringRes
 
 /**
  ******************************************************************************
@@ -453,6 +453,21 @@ class Fonty {
                     val oldTf = (view as Button).typeface
                     view.typeface = Utils.substituteTypeface(oldTf, fallback, view.javaClass.name, view.getId())
 
+                } else if (TableLayout::class.java.isInstance(view)) {
+                    val vg = viewGroup.getChildAt(0) as ViewGroup
+                    val tabsCount = vg.childCount
+                    for (j in 0 until tabsCount) {
+                        val vgTab = vg.getChildAt(j) as ViewGroup
+                        val tabChildsCount = vgTab.childCount
+                        for (i in 0 until tabChildsCount) {
+                            setFontsRaw(vgTab)
+//
+//                            val tabViewChild = vgTab.getChildAt(i)
+//                            if (tabViewChild is TextView) {
+//                                tabViewChild.setTypeface(Font.getInstance().getTypeFace(), Typeface.NORMAL)
+//                            }
+                        }
+                    }
                 } else if (NavigationView::class.java.isInstance(view)) {
                     val nv = view as NavigationView
                     // change font in header (if any)
