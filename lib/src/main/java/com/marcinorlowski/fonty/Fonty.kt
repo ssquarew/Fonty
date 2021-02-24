@@ -15,6 +15,7 @@ import android.widget.TableLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
 
 /**
@@ -453,7 +454,7 @@ class Fonty {
                     val oldTf = (view as Button).typeface
                     view.typeface = Utils.substituteTypeface(oldTf, fallback, view.javaClass.name, view.getId())
 
-                } else if (TableLayout::class.java.isInstance(view)) {
+                } else if (TabLayout::class.java.isInstance(view)) {
                     val vg = view as ViewGroup
                     val tabsCount = vg.childCount
                     for (j in 0 until tabsCount) {
