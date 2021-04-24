@@ -388,6 +388,11 @@ class Fonty {
 
         // --------------------------------------------------------------------------------------------
 
+
+        @JvmStatic
+        fun isFontyReady():Boolean{
+            return alreadyConfigured
+        }
         /**
          * Sets custom fonts.
          *
@@ -418,6 +423,8 @@ class Fonty {
         private var alreadyConfigured = false
 
         // --------------------------------------------------------------------------------------------
+
+
 
         private fun failIfConfigured() {
             if (alreadyConfigured) {
